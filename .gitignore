@@ -1,19 +1,2544 @@
-# Build and Release Folders
-bin/
-bin-debug/
-bin-release/
-[Oo]bj/ # FlashDevelop obj
-[Bb]in/ # FlashDevelop bin
+import flash.display.MovieClip;
+import flash.display.FrameLabel;
+import flash.display.Loader;
+import flash.display.MovieClip;
+import flash.display.Sprite;
+import flash.events.Event;
+import flash.events.MouseEvent;
+import flash.events.TimerEvent;
+import flash.geom.Point;
+import flash.globalization.CurrencyFormatter;
+import flash.sampler.NewObjectSample;
+import flash.text.TextField;
+import flash.text.TextFormat;
+import flash.utils.Timer;
 
-# Other files and folders
-.settings/
+import fl.transitions.Tween;
+import fl.transitions.easing.Strong;
+import fl.transitions.easing.Back;
+import fl.transitions.easing.Regular;
+import flash.media.Sound;
+import flash.media.SoundChannel;
+import flash.media.SoundTransform;
+import flash.net.URLRequest;
+import flash.media.Sound;
+import flash.media.SoundChannel;
+import flash.media.SoundTransform;
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+var game_start:Boolean;
+var reel_spining:Boolean;
+var first_spin:Boolean;
+var new_array_reel_belt_01:Array;
+var new_array_reel_belt_02:Array;
+var new_array_reel_belt_03:Array;
+var new_array_reel_belt_04:Array;
+var new_array_reel_belt_05:Array;
+
+var new_array_reel_belt_array:Array;
+
+var old_array_reel_belt_01:Array;
+var old_array_reel_belt_02:Array;
+var old_array_reel_belt_03:Array;
+var old_array_reel_belt_04:Array;
+var old_array_reel_belt_05:Array;
+
+
+//资金
+var credits:int;
+//倍率
+var credits_per_play:int;//1\2\3\6\10
+//每局花费
+var play_gold_symbols:int;//1\2\3\4\5
+
+var the_cost_of_symbols1:int;
+var the_cost_of_symbols2:int;
+var the_cost_of_symbols3:int;
+var the_cost_of_symbols4:int;
+var the_cost_of_symbols5:int;
+var bet:int;
+//每局赢的奖金数
+var the_num_of_win:int;
+//自动转动
+var auto_spin:Boolean;
+//自动转动次数
+var auto_spin_num:int;
+//有几种item赢了，最终有几个
+var the_kind_num_of_item_win:int;
+//临时统计的，有一个，加一个。用于播放item win ani。
+var the_kind_num_of_item_win_temp:int;
+
+//item结果数组：显示每个位置是否有对应的item
+var item_01_result_array:Array;
+var item_02_result_array:Array;
+var item_03_result_array:Array;
+var item_04_result_array:Array;
+var item_05_result_array:Array;
+var item_06_result_array:Array;
+var item_07_result_array:Array;
+var item_08_result_array:Array;
+var item_09_result_array:Array;
+var item_10_result_array:Array;
+var item_11_result_array:Array;
+var item_12_result_array:Array;
+var item_13_result_array:Array;
+var item_14_result_array:Array;
+var item_15_result_array:Array;
+var item_16_result_array:Array;
+
+var stop_reel_01_array:Array;
+var stop_reel_02_array:Array;
+var stop_reel_03_array:Array;
+var stop_reel_04_array:Array;
+var stop_reel_05_array:Array;
+
+//item是否赢，赢几列
+var item_01_col_of_win:int;
+var item_02_col_of_win:int;
+var item_03_col_of_win:int;
+var item_04_col_of_win:int;
+var item_05_col_of_win:int;
+var item_06_col_of_win:int;
+var item_07_col_of_win:int;
+var item_08_col_of_win:int;
+var item_09_col_of_win:int;
+var item_10_col_of_win:int;
+var item_11_col_of_win:int;
+var item_12_col_of_win:int;
+var item_13_col_of_win:int;
+var item_14_col_of_win:int;
+var item_15_col_of_win:int;
+var item_16_col_of_win:int;
+
+
+
+
+//初始化
+game_start = false;
+reel_spining = false;
+first_spin = true;
+credits = 99999;
+the_cost_of_symbols1 = 40;
+the_cost_of_symbols2 = 90;
+the_cost_of_symbols3 = 190;
+the_cost_of_symbols4 = 340;
+the_cost_of_symbols5 = 440;
+credits_per_play = 1;
+play_gold_symbols = 1;
+the_num_of_win = 0;
+auto_spin = false;
+the_kind_num_of_item_win_temp = 0;
+//CountTheBetNum(play_gold_symbols);
+
+//visible
+Object(root).screen_game.mc_game_M.btn_stop.visible = false;
+Object(root).screen_game.mc_game_M.btn_play.visible = true;
+Object(root).screen_game.mc_game_M.mc_auto_play_dis.visible = false;
+
+//Sound
+//reelStopNorSound
+var reel_stop_nor_sound_Request:URLRequest = new URLRequest("sound/reel_stop_5.mp3");
+var reel_stop_nor_sound:Sound = new Sound(reel_stop_nor_sound_Request);
+
+//reelStopFastSound
+var reel_stop_fast_sound_Request:URLRequest = new URLRequest("sound/reel_stop_1.mp3");
+var reel_stop_fast_sound:Sound = new Sound(reel_stop_fast_sound_Request);
+
+//reelStopFastSound
+var win_01_sound_Request:URLRequest = new URLRequest("sound/small_win_01.mp3");
+var win_01_sound:Sound = new Sound(win_01_sound_Request);
+
+//luo01Sound
+var luo_01_sound_Request:URLRequest = new URLRequest("sound/gong_01.mp3");
+var luo_01_sound:Sound = new Sound(luo_01_sound_Request);
+
+//luo02Sound
+var luo_02_sound_Request:URLRequest = new URLRequest("sound/gong_02.mp3");
+var luo_02_sound:Sound = new Sound(luo_02_sound_Request);
+
+//freeGameSound
+var free_game_sound_Request:URLRequest = new URLRequest("sound/big_win_01.mp3");
+var free_game_sound:Sound = new Sound(free_game_sound_Request);
+		
+var BGMChannel:SoundChannel = new SoundChannel();
+var itemChannel:SoundChannel = new SoundChannel();
+var luoChannel:SoundChannel = new SoundChannel();
+var effectChannel:SoundChannel = new SoundChannel();
+
+function playBGM(sound:Sound):void
+{
+	BGMChannel.stop();
+	BGMChannel = sound.play(0,int.MAX_VALUE);
+}
+
+function playItemSound(sound:Sound,playTimes:uint):void
+{
+	itemChannel.stop();
+	itemChannel = sound.play(0,playTimes);
+}
+
+function playLuoSound(sound:Sound,playTimes:uint):void
+{
+	//luoChannel.stop();
+	luoChannel = sound.play(0,playTimes);
+}
+
+function playEffectSound(sound:Sound,playTimes:uint):void
+{
+	effectChannel.stop();
+	effectChannel = sound.play(0,playTimes);
+}
+
+
+//显示余额、赌注和赢
+ShowCreditsNum();
+ShowBetNum();
+ShowWinNum();
+
+//初始化显示倍率和item的super状态
+Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(1);
+Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(1);
+
+
+
+
+//监听舞台更新
+addEventListener(Event.ENTER_FRAME, UpdateWorld);
+
+function UpdateWorld(e:Event):void
+{
+	//如果游戏没有运行，开始游戏。并开始计时，准备下一轮游戏
+	//开始按钮触发游戏
+	if (game_start && !reel_spining)
+	{
+		//更新资产
+		credits -= bet;
+		ShowCreditsNum();
+		//重置赢的钱数
+		the_num_of_win = 0;
+		ShowWinNum();
+		//停止所有声音
+		itemChannel.stop();
+		effectChannel.stop();
+		luoChannel.stop();
+		
+		//生成新的item数组
+		NewItemNum();
+		//reel开始转动
+		ReelBeginSpin();
+		//reel为转动状态
+		reel_spining = true;
+		
+		//item正常停止时的声音
+		play_reel_stop_sound_timer.start();
+		//播放一轮游戏结束时，计算结果
+		reel_stop_timer.start();
+		
+		//初始化游戏
+		reset_timer.start();
+	}
+	//自动游戏
+	if (auto_spin && !reel_spining)
+	{
+		if(bet > credits)
+		{
+			auto_spin = false;
+			Object(root).screen_game.mc_game_M.btn_stop.visible = false;
+			Object(root).screen_game.mc_game_M.btn_play.visible = true;
+			Object(root).screen_game.mc_game_M.mc_auto_play_dis.visible = false;
+		}else
+		{
+			//更新资产
+			credits -= bet;
+			ShowCreditsNum();
+			//重置赢的钱数
+			the_num_of_win = 0;
+			ShowWinNum();
+			//停止所有声音
+			itemChannel.stop();
+			effectChannel.stop();
+			luoChannel.stop();
+			
+			//生成新的item数组
+			NewItemNum();
+			//reel开始转动
+			ReelBeginSpin();
+			//reel为转动状态
+			reel_spining = true;
+			
+			//item正常停止时的声音
+			play_reel_stop_sound_timer.start();
+			//播放一轮游戏结束时，计算结果
+			reel_stop_timer.start();
+			
+			//如果赢了，播放完音乐之后再进行，否则直接继续下一局
+			if(the_num_of_win > 0)
+			{
+				auto_win_reset_timer.start();
+			}
+			else
+			{
+				auto_reset_timer.start();
+			}
+		}
+	}
+}
+
+//btn_play鼠标事件
+Object(root).screen_game.mc_game_M.btn_play.addEventListener(MouseEvent.CLICK,StartGameFunction);
+Object(root).screen_game.mc_game_M.btn_stop.addEventListener(MouseEvent.CLICK,StopAutoGameFunction);
+Object(root).screen_game.mc_game_M.btn_auto_play.addEventListener(MouseEvent.CLICK,AutoGameFunction);
+
+
+//开始游戏
+function StartGameFunction(e:MouseEvent):void
+{
+	if((credits > bet && !game_start)|| (credits == bet && !game_start))
+	{
+		game_start = true;
+	}
+}
+//自动开始游戏
+function AutoGameFunction(e:MouseEvent):void
+{
+	if((credits > bet && !auto_spin)|| (credits == bet && !auto_spin))
+	{
+		auto_spin = true;
+		Object(root).screen_game.mc_game_M.btn_stop.visible = true;
+		Object(root).screen_game.mc_game_M.btn_play.visible = false;
+		Object(root).screen_game.mc_game_M.mc_auto_play_dis.visible = true;
+	}
+}
+//结束自动游戏
+function StopAutoGameFunction(e:MouseEvent):void
+{
+	auto_spin = false;
+	Object(root).screen_game.mc_game_M.btn_stop.visible = false;
+	Object(root).screen_game.mc_game_M.btn_play.visible = true;
+	Object(root).screen_game.mc_game_M.mc_auto_play_dis.visible = false;
+}
+//生成新的item数组，并传递给reel_belt的new_array
+function NewItemNum():void
+{
+	//游戏开始，初始，生成游戏数字范围1-11
+	new_array_reel_belt_01 = new Array(Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols));
+	new_array_reel_belt_02 = new Array(Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols));
+	new_array_reel_belt_03 = new Array(Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols));
+	new_array_reel_belt_04 = new Array(Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols));
+	new_array_reel_belt_05 = new Array(Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols), Math.floor(Math.random() * 11 + play_gold_symbols));
+	
+	/*
+	//test num
+	new_array_reel_belt_01[1] = 16;
+	new_array_reel_belt_02[2] = 16;
+	new_array_reel_belt_03[1] = 9;
+	new_array_reel_belt_04[1] = 8;
+	new_array_reel_belt_05[1] = 6;
+	*/
+	
+	
+	new_array_reel_belt_01 = [1,16,2,5];
+	new_array_reel_belt_02 = [2,3,17,5];
+	new_array_reel_belt_03 = [9,16,3,4];
+	new_array_reel_belt_04 = [1,17,3,4];
+	new_array_reel_belt_05 = [6,2,9,8];
+	
+	/*
+	//第1列，有且只能有一个锣
+	if(Math.random() < 0.077)
+	{
+	var pos_num_01:int;
+	pos_num_01 = Math.floor(Math.random()*4);
+	new_array_reel_belt_01[pos_num_01] = 16;
+	}
+	
+	//第2、3、4列中的item有且只能有一个“福”或“锣”，概率为1/13=0.077
+	if(Math.random() < 0.077)
+	{
+	var pos_num_02:int;
+	pos_num_02 = Math.floor(Math.random()*4);
+	if(Math.random() < 0.5)
+	{
+	new_array_reel_belt_02[pos_num_02] = 16;
+	}else
+	{
+	new_array_reel_belt_02[pos_num_02] = 17;
+	}
+	}
+	
+	if(Math.random() < 0.077)
+	{
+	var pos_num_03:int;
+	pos_num_03 = Math.floor(Math.random()*4);
+	if(Math.random() < 0.5)
+	{
+	new_array_reel_belt_03[pos_num_03] = 16;
+	}else
+	{
+	new_array_reel_belt_03[pos_num_03] = 17;
+	}
+	}
+	
+	if(Math.random() < 0.077)
+	{
+		var pos_num_04:int;
+		pos_num_04 = Math.floor(Math.random()*4);
+		if(Math.random() < 0.5)
+		{
+			new_array_reel_belt_04[pos_num_04] = 16;
+		}else
+		{
+			new_array_reel_belt_04[pos_num_04] = 17;
+		}
+	}
+	
+	//第5列，有且只能有一个锣
+	if(Math.random() < 0.077)
+	{
+		var pos_num_05:int;
+		pos_num_05 = Math.floor(Math.random()*4);
+		new_array_reel_belt_05[pos_num_05] = 16;
+	}
+	*/
+	
+	/*
+	new_array_reel_belt_array = new Array();
+	new_array_reel_belt_array = [[new_array_reel_belt_01[1],new_array_reel_belt_01[2],new_array_reel_belt_01[3]],[new_array_reel_belt_02[1],new_array_reel_belt_02[2],new_array_reel_belt_02[3]],[new_array_reel_belt_03[1],new_array_reel_belt_03[2],new_array_reel_belt_03[3]],[new_array_reel_belt_04[1],new_array_reel_belt_04[2],new_array_reel_belt_04[3]],[new_array_reel_belt_05[1],new_array_reel_belt_05[2],new_array_reel_belt_05[3]]];
+	trace(new_array_reel_belt_array);
+	*/
+	//trace(new_array_reel_belt_array[4][2]);
+	
+	//将生成序列传递给reel_spin的new_array
+	Object(root).screen_game.mc_game_M.reel.reel_belt_01.new_array = new_array_reel_belt_01;
+	Object(root).screen_game.mc_game_M.reel.reel_belt_02.new_array = new_array_reel_belt_02;
+	Object(root).screen_game.mc_game_M.reel.reel_belt_03.new_array = new_array_reel_belt_03;
+	Object(root).screen_game.mc_game_M.reel.reel_belt_04.new_array = new_array_reel_belt_04;
+	Object(root).screen_game.mc_game_M.reel.reel_belt_05.new_array = new_array_reel_belt_05;
+}
+
+//开始转动
+function ReelBeginSpin():void
+{
+	MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.gotoAndPlay("spinning");
+	MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.gotoAndPlay("spinning");
+	MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.gotoAndPlay("spinning");
+	MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.gotoAndPlay("spinning");
+	MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.gotoAndPlay("spinning");
+	
+	//新一轮游戏，将这一轮的new_array传递给old_array,以便item spin停止时，停到对应的item上，保持连贯性
+	Object(root).screen_game.mc_game_M.reel.reel_belt_01.old_array = new_array_reel_belt_01;
+	Object(root).screen_game.mc_game_M.reel.reel_belt_02.old_array = new_array_reel_belt_02;
+	Object(root).screen_game.mc_game_M.reel.reel_belt_03.old_array = new_array_reel_belt_03;
+	Object(root).screen_game.mc_game_M.reel.reel_belt_04.old_array = new_array_reel_belt_04;
+	Object(root).screen_game.mc_game_M.reel.reel_belt_05.old_array = new_array_reel_belt_05;
+	
+}
+
+//play the reel stop sound function包括赢和没赢的声音
+var play_reel_stop_sound_timer:Timer = new Timer(1200, 1);
+play_reel_stop_sound_timer.addEventListener(TimerEvent.TIMER_COMPLETE, PlayReelStopSoundTimerFunction);
+
+function PlayReelStopSoundTimerFunction(event:TimerEvent):void
+{
+	
+	//检查是否有锣,有多少，响几次
+	var the_1_col_luo_item:int;
+	var the_2_col_luo_item:int;
+	var the_3_col_luo_item:int;
+	var the_4_col_luo_item:int;
+	var the_5_col_luo_item:int;
+	the_1_col_luo_item = 0;
+	the_2_col_luo_item = 0;
+	the_3_col_luo_item = 0;
+	the_4_col_luo_item = 0;
+	the_5_col_luo_item = 0;
+	//检查2、3、4列是否有福
+	var the_2_col_fu_item:Boolean;
+	var the_3_col_fu_item:Boolean;
+	var the_4_col_fu_item:Boolean;
+	the_2_col_fu_item = false;
+	the_3_col_fu_item = false;
+	the_4_col_fu_item = false;
+
+	for(var i:int = 1; i < 4; i++)
+	{
+		//luo item state
+		if (new_array_reel_belt_01[i] == 16)
+		{
+			the_1_col_luo_item = 1;
+		}
+
+		if (new_array_reel_belt_02[i] == 16)
+		{
+			the_2_col_luo_item = 1;
+		}
+
+		if (new_array_reel_belt_03[i] == 16)
+		{
+			the_3_col_luo_item = 1;
+		}
+
+		if (new_array_reel_belt_04[i] == 16)
+		{
+			the_4_col_luo_item = 1;
+		}
+
+		if (new_array_reel_belt_05[i] == 16)
+		{
+			the_5_col_luo_item = 1;
+		}
+
+		//fu item state
+		if (new_array_reel_belt_02[i] == 17)
+		{
+			the_2_col_fu_item = true;
+		}
+
+		if (new_array_reel_belt_03[i] == 17)
+		{
+			the_3_col_fu_item = true;
+		}
+
+		if (new_array_reel_belt_04[i] == 17)
+		{
+			the_4_col_fu_item = true;
+		}
+	}
+	
+	//5个锣,不播放item停止的声音。后续有free game
+	if(the_1_col_luo_item == 1 && (the_2_col_luo_item == 1|| the_2_col_fu_item) && (the_3_col_luo_item == 1|| the_3_col_fu_item) && (the_4_col_luo_item == 1|| the_4_col_fu_item) && the_5_col_luo_item == 1)
+	{
+		play_1_luo_sound_timer.start();
+		if(the_2_col_luo_item == 1)
+		{
+			play_2_luo_sound_timer.start();
+		}
+		
+		if(the_3_col_luo_item == 1)
+		{
+			play_3_luo_sound_timer.start();
+		}
+		
+		if(the_4_col_luo_item == 1)
+		{
+			play_4_luo_sound_timer.start();
+		}
+		play_5_luo_sound_timer.start();
+
+		PlayFreeGameEffectSound(5);
+		//playLuoSound(luo_01_sound,1);
+		//playLuoSound(luo_02_sound,the_1_col_luo_item + the_2_col_luo_item + the_3_col_luo_item + the_4_col_luo_item + the_5_col_luo_item);
+
+	}
+	//4个锣,不播放item停止的声音。后续有free game
+	else if(the_1_col_luo_item == 1 && (the_2_col_luo_item == 1|| the_2_col_fu_item) && (the_3_col_luo_item == 1|| the_3_col_fu_item) && (the_4_col_luo_item == 1|| the_4_col_fu_item))
+	{
+		play_1_luo_sound_timer.start();
+		
+		if(the_2_col_luo_item == 1)
+		{
+			play_2_luo_sound_timer.start();
+		}
+		
+		if(the_3_col_luo_item == 1)
+		{
+			play_3_luo_sound_timer.start();
+		}
+		
+		if(the_4_col_luo_item == 1)
+		{
+			play_4_luo_sound_timer.start();
+		}
+
+		PlayFreeGameEffectSound(4);
+	}
+	//3个锣,不播放item停止的声音。后续有free game
+	else if(the_1_col_luo_item == 1 && (the_2_col_luo_item == 1|| the_2_col_fu_item) && (the_3_col_luo_item == 1|| the_3_col_fu_item))
+	{
+		play_1_luo_sound_timer.start();
+		
+		if(the_2_col_luo_item == 1)
+		{
+			play_2_luo_sound_timer.start();
+		}
+		
+		if(the_3_col_luo_item == 1)
+		{
+			play_3_luo_sound_timer.start();
+		}
+		
+		PlayFreeGameEffectSound(3);
+	}
+	//2个锣
+	else if(the_1_col_luo_item == 1 && (the_2_col_luo_item == 1|| the_2_col_fu_item))
+	{
+		play_1_luo_sound_timer.start();
+		
+		if(the_2_col_luo_item == 1)
+		{
+			play_2_luo_sound_timer.start();
+		}
+
+		playItemSound(reel_stop_nor_sound, 1);
+	}
+	//1个锣
+	else if(the_1_col_luo_item == 1)
+	{
+		play_1_luo_sound_timer.start();
+
+		playItemSound(reel_stop_nor_sound, 1);
+	}else
+	{
+		playItemSound(reel_stop_nor_sound, 1);
+	}
+	
+
+}
+
+//每一个col停止间隔时间
+var luo_sound_time:int = 310;
+
+//第5col之后播放luo的声音
+var play_5_luo_sound_timer:Timer = new Timer(luo_sound_time*4, 1);
+play_5_luo_sound_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play5LuoSoundTimerFunction);
+
+function Play5LuoSoundTimerFunction(event:TimerEvent):void
+{
+	playLuoSound(luo_01_sound,1);
+}
+//第4col之后播放luo的声音
+var play_4_luo_sound_timer:Timer = new Timer(luo_sound_time*3, 1);
+play_4_luo_sound_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play4LuoSoundTimerFunction);
+
+function Play4LuoSoundTimerFunction(event:TimerEvent):void
+{
+	playLuoSound(luo_01_sound,1);
+}
+//第3col之后播放luo的声音
+var play_3_luo_sound_timer:Timer = new Timer(luo_sound_time*2, 1);
+play_3_luo_sound_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play3LuoSoundTimerFunction);
+
+function Play3LuoSoundTimerFunction(event:TimerEvent):void
+{
+	playLuoSound(luo_01_sound,1);
+}
+//第2col之后播放luo的声音
+var play_2_luo_sound_timer:Timer = new Timer(luo_sound_time*1, 1);
+play_2_luo_sound_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play2LuoSoundTimerFunction);
+
+function Play2LuoSoundTimerFunction(event:TimerEvent):void
+{
+	playLuoSound(luo_01_sound,1);
+}
+//第1col之后播放luo的声音
+var play_1_luo_sound_timer:Timer = new Timer(luo_sound_time*0, 1);
+play_1_luo_sound_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play1LuoSoundTimerFunction);
+
+function Play1LuoSoundTimerFunction(event:TimerEvent):void
+{
+	playLuoSound(luo_01_sound,1);
+}
+
+//第num之后播放free game的声音
+function PlayFreeGameEffectSound(num:int):void
+{
+	var play_free_game_sound_timer:Timer = new Timer(luo_sound_time*num - 100, 1);
+	play_free_game_sound_timer.addEventListener(TimerEvent.TIMER_COMPLETE, PlayFreeGameEffectSoundTimerFunction);
+
+	function PlayFreeGameEffectSoundTimerFunction(event:TimerEvent):void
+	{
+		effectChannel.stop();
+		playLuoSound(free_game_sound,1);
+	}
+
+	play_free_game_sound_timer.start();
+}
+
+
+//每次游戏，开始之后2800，结束。等待下一次开始
+var reset_timer:Timer = new Timer(2800, 1);
+reset_timer.addEventListener(TimerEvent.TIMER_COMPLETE, ResetTimerFunction);
+
+function ResetTimerFunction(event:TimerEvent):void
+{
+	game_start = false;
+	reel_spining = false;
+}
+
+//自动游戏，每局时间间隔2900
+var auto_reset_timer:Timer = new Timer(2900, 1);
+auto_reset_timer.addEventListener(TimerEvent.TIMER_COMPLETE, AutoResetTimerFunction);
+
+function AutoResetTimerFunction(event:TimerEvent):void
+{
+	reel_spining = false;
+}
+
+//自动游戏，赢了，每局时间间隔4000
+var auto_win_reset_timer:Timer = new Timer(4000, 1);
+auto_win_reset_timer.addEventListener(TimerEvent.TIMER_COMPLETE, AutoWinResetTimerFunction);
+
+function AutoWinResetTimerFunction(event:TimerEvent):void
+{
+	reel_spining = false;
+}
+
+//reel停止之后的动画、音乐和数字
+var reel_stop_timer:Timer = new Timer(2700, 1);
+reel_stop_timer.addEventListener(TimerEvent.TIMER_COMPLETE, ReelStopTimerFunction);
+
+function ReelStopTimerFunction(event:TimerEvent):void
+{
+	
+	//计算有几种种item赢了
+	the_kind_num_of_item_win = 0;
+	//CountTheKindNumOfItemWin();
+	the_kind_num_of_item_win_temp = 0;
+
+	item_01_col_of_win = 0;
+	item_02_col_of_win = 0;
+	item_03_col_of_win = 0;
+	item_04_col_of_win = 0;
+	item_05_col_of_win = 0;
+	item_06_col_of_win = 0;
+	item_07_col_of_win = 0;
+	item_08_col_of_win = 0;
+	item_09_col_of_win = 0;
+	item_10_col_of_win = 0;
+	item_11_col_of_win = 0;
+	item_12_col_of_win = 0;
+	item_13_col_of_win = 0;
+	item_14_col_of_win = 0;
+	item_15_col_of_win = 0;
+	item_16_col_of_win = 0;
+
+
+	//计算item赢的种类
+	CheckItemWetherWin(1);
+	CheckItemWetherWin(2);
+	CheckItemWetherWin(3);
+	CheckItemWetherWin(4);
+	CheckItemWetherWin(5);
+	CheckItemWetherWin(6);
+	CheckItemWetherWin(7);
+	CheckItemWetherWin(8);
+	CheckItemWetherWin(9);
+	CheckItemWetherWin(10);
+	CheckItemWetherWin(11);
+	CheckItemWetherWin(12);
+	CheckItemWetherWin(13);
+	CheckItemWetherWin(14);
+	CheckItemWetherWin(15);
+	CheckItemWetherWin(16);
+
+
+
+	//计算赢的数额
+	ResultOfTheFortunrFunction(1,5*5,10*5,50*5);//gold
+	ResultOfTheFortunrFunction(2,5*5,10*5,50*5);//turtle
+	ResultOfTheFortunrFunction(3,5*5,10*5,50*5);//ship
+	ResultOfTheFortunrFunction(4,5*5,10*5,50*5);//bird
+	ResultOfTheFortunrFunction(5,5*5,10*5,50*5);//9
+	ResultOfTheFortunrFunction(6,5*5,10*5,50*5);//10
+	ResultOfTheFortunrFunction(7,5*5,10*5,50*5);//J
+	ResultOfTheFortunrFunction(8,5*5,10*5,50*5);//Q
+	ResultOfTheFortunrFunction(9,5*5,10*5,50*5);//K
+	ResultOfTheFortunrFunction(10,5*5,10*5,50*5);//A
+	ResultOfTheFortunrFunction(11,10*5,20*5,100*5);//cash
+	//super item
+	ResultOfTheFortunrFunction(12,25*5,50*5,250*5);//super gold
+	ResultOfTheFortunrFunction(13,40*5,80*5,400*5);//super turtle
+	ResultOfTheFortunrFunction(14,50*5,100*5,500*5);//super ship
+	ResultOfTheFortunrFunction(15,100*5,200*5,1000*5);//super bird
+	//luo item
+	ResultOfTheFortunrFunction(16,5*5,10*5,50*5);//luo
+
+	//Object(root).screen_game.txt_out_put.appendText("Win : "+the_num_of_win+"."+"\n");
+	the_num_of_win *= credits_per_play;
+	credits += the_num_of_win;
+
+	if(item_16_col_of_win > 0 )
+	{
+		
+	}
+	
+	ShowWinNum();
+}
+
+
+
+//the result
+function ResultOfTheFortunrFunction(item_num:int,pay_fortune_3:int,pay_fortune_4:int,pay_fortune_5:int):void
+{
+	//stop_reel_01_array = new Array(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02,MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03,MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04);
+	//stop_reel_02_array = new Array(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02,MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03,MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04);
+	//stop_reel_03_array = new Array(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02,MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03,MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04);
+	//stop_reel_04_array = new Array(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02,MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_03,MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04);
+	//stop_reel_05_array = new Array(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_02,MovieClip(root).screen_game.mc_game_M.reel.reel_belt_06.stop_reel_03,MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_04);
+	
+	//stop_reel_01_array[0].gotoAndStop(stop_reel_01_array[0].currentFrame+17);
+	
+	var the_same_num_of_item_in_1_vertical:int = 0;
+	var the_same_num_of_item_in_2_vertical:int = 0;
+	var the_same_num_of_item_in_3_vertical:int = 0;
+	var the_same_num_of_item_in_4_vertical:int = 0;
+	var the_same_num_of_item_in_5_vertical:int = 0;
+	
+	for (var i:int = 1; i < 4; i++)
+	{
+		if (new_array_reel_belt_01[i] == item_num)
+		{
+			the_same_num_of_item_in_1_vertical++;
+		}
+	}
+	for (var j:int = 1; j < 4; j++)
+	{
+		if (new_array_reel_belt_02[j] == item_num || new_array_reel_belt_02[j] == 17)
+		{
+			the_same_num_of_item_in_2_vertical++;
+		}
+	}
+	for (var k:int = 1; k < 4; k++)
+	{
+		if (new_array_reel_belt_03[k] == item_num || new_array_reel_belt_03[k] == 17)
+		{
+			the_same_num_of_item_in_3_vertical++;
+		}
+	}
+	for (var m:int = 1; m < 4; m++)
+	{
+		if (new_array_reel_belt_04[m] == item_num || new_array_reel_belt_04[m] == 17)
+		{
+			the_same_num_of_item_in_4_vertical++;
+		}
+	}
+	for (var n:int = 1; n < 4; n++)
+	{
+		if (new_array_reel_belt_05[n] == item_num)
+		{
+			the_same_num_of_item_in_5_vertical++;
+		}
+	}
+	
+	var item_same_num:int = 0;
+	var item_line_num:int = 0;
+	
+	
+	if (the_same_num_of_item_in_1_vertical > 0 && the_same_num_of_item_in_2_vertical > 0 && the_same_num_of_item_in_3_vertical > 0 && the_same_num_of_item_in_4_vertical > 0 && the_same_num_of_item_in_5_vertical > 0)
+	{
+		//item_same_num = the_same_num_of_item_in_1_vertical + the_same_num_of_item_in_2_vertical + the_same_num_of_item_in_3_vertical + the_same_num_of_item_in_4_vertical + the_same_num_of_item_in_5_vertical;
+		item_line_num = the_same_num_of_item_in_1_vertical * the_same_num_of_item_in_2_vertical * the_same_num_of_item_in_3_vertical * the_same_num_of_item_in_4_vertical * the_same_num_of_item_in_5_vertical;			
+		
+		the_num_of_win += pay_fortune_5 * item_line_num;
+		
+		the_kind_num_of_item_win_temp ++;
+		
+		//如果锣赢了，不播放其他item动画
+		if(item_16_col_of_win > 0)
+		{
+			//Play1ItemAniFunction(16,item_16_col_of_win);
+		}else{
+			if(the_kind_num_of_item_win_temp == 1)
+			{
+				Play1ItemAniFunction(item_num,5);
+			}
+			if(the_kind_num_of_item_win_temp == 2)
+			{
+				Play2ItemAniFunction(item_num,5);
+			}
+			if(the_kind_num_of_item_win_temp == 3)
+			{
+				Play3ItemAniFunction(item_num,5);
+			}
+		}
+		
+	}
+	else if (the_same_num_of_item_in_1_vertical > 0 && the_same_num_of_item_in_2_vertical > 0 && the_same_num_of_item_in_3_vertical > 0 && the_same_num_of_item_in_4_vertical > 0)
+	{
+		//item_same_num = the_same_num_of_item_in_1_vertical + the_same_num_of_item_in_2_vertical + the_same_num_of_item_in_3_vertical + the_same_num_of_item_in_4_vertical;
+		item_line_num = the_same_num_of_item_in_1_vertical * the_same_num_of_item_in_2_vertical * the_same_num_of_item_in_3_vertical * the_same_num_of_item_in_4_vertical;
+		
+		the_num_of_win += pay_fortune_4 * item_line_num;
+		
+		the_kind_num_of_item_win_temp ++;
+		
+		if(item_16_col_of_win > 0)
+		{
+			//Play1ItemAniFunction(item_num,5);
+		}else{
+			
+			if(the_kind_num_of_item_win_temp == 1)
+			{
+				Play1ItemAniFunction(item_num,4);
+			}
+			if(the_kind_num_of_item_win_temp == 2)
+			{
+				Play2ItemAniFunction(item_num,4);
+			}
+			if(the_kind_num_of_item_win_temp == 3)
+			{
+				Play3ItemAniFunction(item_num,4);
+			}
+		}
+		
+	}
+	else if (the_same_num_of_item_in_1_vertical > 0 && the_same_num_of_item_in_2_vertical > 0 && the_same_num_of_item_in_3_vertical > 0)
+	{
+		//item_same_num = the_same_num_of_item_in_1_vertical + the_same_num_of_item_in_2_vertical + the_same_num_of_item_in_3_vertical;
+		item_line_num = the_same_num_of_item_in_1_vertical * the_same_num_of_item_in_2_vertical * the_same_num_of_item_in_3_vertical;
+		
+		the_num_of_win += pay_fortune_3 * item_line_num;
+		
+		the_kind_num_of_item_win_temp ++	;
+		
+		if(item_16_col_of_win > 0)
+		{
+			//Play1ItemAniFunction(item_num,5);
+		}else{
+			if(the_kind_num_of_item_win_temp == 1)
+			{
+				Play1ItemAniFunction(item_num,3);
+			}
+			if(the_kind_num_of_item_win_temp == 2)
+			{
+				Play2ItemAniFunction(item_num,3);
+			}
+			if(the_kind_num_of_item_win_temp == 3)
+			{
+				Play3ItemAniFunction(item_num,3);
+			}
+		}
+	}
+	else
+	{
+		//no win
+	}
+}
+
+var the_time_of_item_ani:int;
+the_time_of_item_ani = 1700;
+
+function Play1ItemAniFunction(item_num:int,col_num:int):void
+{
+	//第一次
+	var play_1_1_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*0+0)+0, 1);
+	play_1_1_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play1ItemAniTimerFunction);
+
+	play_1_1_item_ani_timer.start();
+
+	var stop_1_1_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*0+1), 1);
+	stop_1_1_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Stop1ItemAniTimerFunction);
+
+	stop_1_1_item_ani_timer.start();
+	//第二次
+	var play_1_2_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*1+0)+500, 1);
+	play_1_2_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play1ItemAniTimerFunction);
+
+	play_1_2_item_ani_timer.start();
+
+	var stop_1_2_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*1+1), 1);
+	stop_1_2_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Stop1ItemAniTimerFunction);
+
+	stop_1_2_item_ani_timer.start();
+	//第三次
+	var play_1_3_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*2+0)+500, 1);
+	play_1_3_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play1ItemAniTimerFunction);
+
+	play_1_3_item_ani_timer.start();
+
+	var stop_1_3_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*2+1), 1);
+	stop_1_3_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Stop1ItemAniTimerFunction);
+
+	stop_1_3_item_ani_timer.start();
+
+	/*
+	if(reel_spining)
+	{
+		play_1_1_item_ani_timer.reset();
+		stop_1_1_item_ani_timer.reset();
+		play_1_2_item_ani_timer.reset();
+		stop_1_2_item_ani_timer.reset();
+		play_1_3_item_ani_timer.reset();
+		stop_1_3_item_ani_timer.reset();	
+	}
+	*/
+
+	function Play1ItemAniTimerFunction(event:TimerEvent):void
+	{
+		if(col_num == 5)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame+17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame+17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame+17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame+17);
+			}
+			//col 5
+			if(new_array_reel_belt_05[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_05[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_05[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_04.currentFrame+17);
+			}
+		}
+
+		if(col_num == 4)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame+17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame+17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame+17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame+17);
+			}
+		}
+
+		if(col_num == 3)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame+17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame+17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame+17);
+			}
+		}
+	}
+
+	function Stop1ItemAniTimerFunction(event:TimerEvent):void
+	{
+		if(col_num == 5)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame-17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame-17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame-17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame-17);
+			}
+			//col 5
+			if(new_array_reel_belt_05[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_05[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_05[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_04.currentFrame-17);
+			}
+		}
+
+		if(col_num == 4)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame-17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame-17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame-17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame-17);
+			}
+		}
+
+		if(col_num == 3)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame-17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame-17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame-17);
+			}
+		}
+	}
+}
+
+function Play2ItemAniFunction(item_num:int,col_num:int):void
+{
+	//第一次
+	var play_2_1_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*0+1)+500, 1);
+	play_2_1_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play2ItemAniTimerFunction);
+
+	play_2_1_item_ani_timer.start();
+
+	var stop_2_1_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*0+2), 1);
+	stop_2_1_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Stop2ItemAniTimerFunction);
+
+	stop_2_1_item_ani_timer.start();
+	//第二次
+	var play_2_2_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*1+1)+500, 1);
+	play_2_2_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play2ItemAniTimerFunction);
+
+	play_2_2_item_ani_timer.start();
+
+	var stop_2_2_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*1+2), 1);
+	stop_2_2_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Stop2ItemAniTimerFunction);
+
+	stop_2_2_item_ani_timer.start();
+	//第三次
+	var play_2_3_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*2+1)+500, 1);
+	play_2_3_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play2ItemAniTimerFunction);
+
+	play_2_3_item_ani_timer.start();
+
+	var stop_2_3_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*2+2), 1);
+	stop_2_3_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Stop2ItemAniTimerFunction);
+
+	stop_2_3_item_ani_timer.start();
+
+
+	function Play2ItemAniTimerFunction(event:TimerEvent):void
+	{
+		if(col_num == 5)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame+17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame+17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame+17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame+17);
+			}
+			//col 5
+			if(new_array_reel_belt_05[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_05[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_05[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_04.currentFrame+17);
+			}
+		}
+
+		if(col_num == 4)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame+17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame+17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame+17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame+17);
+			}
+		}
+
+		if(col_num == 3)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame+17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame+17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame+17);
+			}
+		}
+	}
+
+	function Stop2ItemAniTimerFunction(event:TimerEvent):void
+	{
+		if(col_num == 5)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame-17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame-17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame-17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame-17);
+			}
+			//col 5
+			if(new_array_reel_belt_05[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_05[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_05[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_04.currentFrame-17);
+			}
+		}
+
+		if(col_num == 4)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame-17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame-17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame-17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame-17);
+			}
+		}
+
+		if(col_num == 3)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame-17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame-17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame-17);
+			}
+		}
+	}	
+}
+
+function Play3ItemAniFunction(item_num:int,col_num:int):void
+{
+	//第一次
+	var play_3_1_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*0+2)+500, 1);
+	play_3_1_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play3ItemAniTimerFunction);
+
+	play_3_1_item_ani_timer.start();
+
+	var stop_3_1_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*0+3), 1);
+	stop_3_1_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Stop3ItemAniTimerFunction);
+
+	stop_3_1_item_ani_timer.start();
+	//第二次
+	var play_3_2_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*1+2)+500, 1);
+	play_3_2_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play3ItemAniTimerFunction);
+
+	play_3_2_item_ani_timer.start();
+
+	var stop_3_2_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*1+3), 1);
+	stop_3_2_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Stop3ItemAniTimerFunction);
+
+	stop_3_2_item_ani_timer.start();
+	//第三次
+	var play_3_3_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*2+2)+500, 1);
+	play_3_3_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Play3ItemAniTimerFunction);
+
+	play_3_3_item_ani_timer.start();
+
+	var stop_3_3_item_ani_timer:Timer = new Timer(the_time_of_item_ani*(the_kind_num_of_item_win*2+3), 1);
+	stop_3_3_item_ani_timer.addEventListener(TimerEvent.TIMER_COMPLETE, Stop3ItemAniTimerFunction);
+
+	stop_3_3_item_ani_timer.start();
+
+	function Play3ItemAniTimerFunction(event:TimerEvent):void
+	{
+		if(col_num == 5)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame+17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame+17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame+17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame+17);
+			}
+			//col 5
+			if(new_array_reel_belt_05[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_05[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_05[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_04.currentFrame+17);
+			}
+		}
+
+		if(col_num == 4)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame+17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame+17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame+17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame+17);
+			}
+		}
+
+		if(col_num == 3)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame+17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame+17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame+17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame+17);
+			}
+		}
+	}
+
+	function Stop3ItemAniTimerFunction(event:TimerEvent):void
+	{
+		if(col_num == 5)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame-17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame-17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame-17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame-17);
+			}
+			//col 5
+			if(new_array_reel_belt_05[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_05[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_05[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_05.stop_reel_04.currentFrame-17);
+			}
+		}
+
+		if(col_num == 4)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame-17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame-17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame-17);
+			}
+			//col 4
+			if(new_array_reel_belt_04[1] == item_num || new_array_reel_belt_04[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[2] == item_num || new_array_reel_belt_04[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_04[3] == item_num || new_array_reel_belt_04[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_04.stop_reel_04.currentFrame-17);
+			}
+		}
+
+		if(col_num == 3)
+		{
+			//col 1
+			if(new_array_reel_belt_01[1] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[2] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_01[3] == item_num)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_01.stop_reel_04.currentFrame-17);
+			}
+			//col 2
+			if(new_array_reel_belt_02[1] == item_num || new_array_reel_belt_02[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[2] == item_num || new_array_reel_belt_02[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_02[3] == item_num || new_array_reel_belt_02[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_02.stop_reel_04.currentFrame-17);
+			}
+			//col 3
+			if(new_array_reel_belt_03[1] == item_num || new_array_reel_belt_03[1] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_02.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[2] == item_num || new_array_reel_belt_03[2] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_03.currentFrame-17);
+			}
+			if(new_array_reel_belt_03[3] == item_num || new_array_reel_belt_03[3] == 17)
+			{
+				MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.gotoAndStop(MovieClip(root).screen_game.mc_game_M.reel.reel_belt_03.stop_reel_04.currentFrame-17);
+			}
+		}
+	}
+}
+
+function PlayWinSound():void
+{
+	//var ratio:int;
+	//ratio = the_num_of_win/bet;
+	effectChannel.stop();
+	playEffectSound(win_01_sound,1);
+
+}
+
+//检查item是否赢了
+function CheckItemWetherWin(item_num:int):void
+{
+	var the_same_num_of_item_in_1_vertical:int = 0;
+	var the_same_num_of_item_in_2_vertical:int = 0;
+	var the_same_num_of_item_in_3_vertical:int = 0;
+	var the_same_num_of_item_in_4_vertical:int = 0;
+	var the_same_num_of_item_in_5_vertical:int = 0;
+	
+	for (var i:int = 1; i < 4; i++)
+	{
+		if (new_array_reel_belt_01[i] == item_num)
+		{
+			the_same_num_of_item_in_1_vertical++;
+		}
+	}
+	for (var j:int = 1; j < 4; j++)
+	{
+		if (new_array_reel_belt_02[j] == item_num || new_array_reel_belt_02[j] == 17)
+		{
+			the_same_num_of_item_in_2_vertical++;
+		}
+	}
+	for (var k:int = 1; k < 4; k++)
+	{
+		if (new_array_reel_belt_03[k] == item_num || new_array_reel_belt_03[k] == 17)
+		{
+			the_same_num_of_item_in_3_vertical++;
+		}
+	}
+	for (var m:int = 1; m < 4; m++)
+	{
+		if (new_array_reel_belt_04[m] == item_num || new_array_reel_belt_04[m] == 17)
+		{
+			the_same_num_of_item_in_4_vertical++;
+		}
+	}
+	for (var n:int = 1; n < 4; n++)
+	{
+		if (new_array_reel_belt_05[n] == item_num)
+		{
+			the_same_num_of_item_in_5_vertical++;
+		}
+	}
+	
+	//var item_same_num:int = 0;
+	//var item_line_num:int = 0;
+
+	if (the_same_num_of_item_in_1_vertical > 0 && the_same_num_of_item_in_2_vertical > 0 && the_same_num_of_item_in_3_vertical > 0 && the_same_num_of_item_in_4_vertical > 0 && the_same_num_of_item_in_5_vertical > 0)
+	{
+		the_kind_num_of_item_win ++;
+		
+		switch(item_num)
+		{
+			case 1:
+				item_01_col_of_win = 5;
+				break;
+			case 2:
+				item_02_col_of_win = 5;
+				break;
+			case 3:
+				item_03_col_of_win = 5;
+				break;
+			case 4:
+				item_04_col_of_win = 5;
+				break;
+			case 5:
+				item_05_col_of_win = 5;
+				break;
+			case 6:
+				item_06_col_of_win = 5;
+				break;
+			case 7:
+				item_07_col_of_win = 5;
+				break;
+			case 8:
+				item_08_col_of_win = 5;
+				break;
+			case 9:
+				item_09_col_of_win = 5;
+				break;
+			case 10:
+				item_10_col_of_win = 5;
+				break;
+			case 11:
+				item_11_col_of_win = 5;
+				break;
+			case 12:
+				item_12_col_of_win = 5;
+				break;
+			case 13:
+				item_13_col_of_win = 5;
+				break;
+			case 14:
+				item_14_col_of_win = 5;
+				break;
+			case 15:
+				item_15_col_of_win = 5;
+				break;
+			case 16:
+				item_16_col_of_win = 5;
+				break;
+			default:
+		}
+
+		if(item_num == 16)
+		{	
+			the_kind_num_of_item_win_temp = 1;
+			Play1ItemAniFunction(16,5)
+		}
+	}else if (the_same_num_of_item_in_1_vertical > 0 && the_same_num_of_item_in_2_vertical > 0 && the_same_num_of_item_in_3_vertical > 0 && the_same_num_of_item_in_4_vertical > 0)
+	{
+		the_kind_num_of_item_win ++;
+		switch(item_num)
+		{
+			case 1:
+				item_01_col_of_win = 4;
+				break;
+			case 2:
+				item_02_col_of_win = 4;
+				break;
+			case 3:
+				item_03_col_of_win = 4;
+				break;
+			case 4:
+				item_04_col_of_win = 4;
+				break;
+			case 5:
+				item_05_col_of_win = 4;
+				break;
+			case 6:
+				item_06_col_of_win = 4;
+				break;
+			case 7:
+				item_07_col_of_win = 4;
+				break;
+			case 8:
+				item_08_col_of_win = 4;
+				break;
+			case 9:
+				item_09_col_of_win = 4;
+				break;
+			case 10:
+				item_10_col_of_win = 4;
+				break;
+			case 11:
+				item_11_col_of_win = 4;
+				break;
+			case 12:
+				item_12_col_of_win = 4;
+				break;
+			case 13:
+				item_13_col_of_win = 4;
+				break;
+			case 14:
+				item_14_col_of_win = 4;
+				break;
+			case 15:
+				item_15_col_of_win = 4;
+				break;
+			case 16:
+				item_16_col_of_win = 4;
+				break;
+			default:
+		}
+
+		if(item_num == 16)
+		{	
+			the_kind_num_of_item_win_temp = 1;
+			Play1ItemAniFunction(16,4)
+		}
+
+	}else if (the_same_num_of_item_in_1_vertical > 0 && the_same_num_of_item_in_2_vertical > 0 && the_same_num_of_item_in_3_vertical > 0 )
+	{
+		the_kind_num_of_item_win ++;
+
+		switch(item_num)
+		{
+			case 1:
+				item_01_col_of_win = 3;
+				break;
+			case 2:
+				item_02_col_of_win = 3;
+				break;
+			case 3:
+				item_03_col_of_win = 3;
+				break;
+			case 4:
+				item_04_col_of_win = 3;
+				break;
+			case 5:
+				item_05_col_of_win = 3;
+				break;
+			case 6:
+				item_06_col_of_win = 3;
+				break;
+			case 7:
+				item_07_col_of_win = 3;
+				break;
+			case 8:
+				item_08_col_of_win = 3;
+				break;
+			case 9:
+				item_09_col_of_win = 3;
+				break;
+			case 10:
+				item_10_col_of_win = 3;
+				break;
+			case 11:
+				item_11_col_of_win = 3;
+				break;
+			case 12:
+				item_12_col_of_win = 3;
+				break;
+			case 13:
+				item_13_col_of_win = 3;
+				break;
+			case 14:
+				item_14_col_of_win = 3;
+				break;
+			case 15:
+				item_15_col_of_win = 3;
+				break;
+			case 16:
+				item_16_col_of_win = 3;
+				break;
+			default:
+		}
+
+		if(item_num == 16)
+		{	
+			the_kind_num_of_item_win_temp = 1;
+			Play1ItemAniFunction(16,3)
+		}
+	}else{
+
+	}
+
+
+}
+
+
+
+function ShowCreditsNum():void
+{
+	var num:int;
+	num = credits;
+	if(num > 999999)
+	{
+		Object(root).screen_game.mc_game_M.txt_credits_num.text = String(int(num/1000000)+","+int((num%1000000)/100000)+int((num%100000)/10000)+int((num%10000)/1000)+","+int((num%1000)/100)+int((num%100)/10)+int(num%10));
+	}else if(num > 999)
+	{
+		Object(root).screen_game.mc_game_M.txt_credits_num.text = String(int(num/1000)+","+int((num%1000)/100)+int((num%100)/10)+int(num%10));
+	}else
+	{
+		Object(root).screen_game.mc_game_M.txt_credits_num.text = String(num);
+	}
+}
+
+function ShowBetNum():void
+{
+	switch(play_gold_symbols){
+		case 1:
+			bet = the_cost_of_symbols1*credits_per_play;
+			break;
+		case 2:
+			bet = the_cost_of_symbols2*credits_per_play;
+			break;
+		case 3:
+			bet = the_cost_of_symbols3*credits_per_play;
+			break;
+		case 4:
+			bet = the_cost_of_symbols4*credits_per_play;
+			break;
+		case 5:
+			bet = the_cost_of_symbols5*credits_per_play;
+			break;
+		default:
+	}
+
+	var num:int;
+	num = bet;
+
+	if(num > 999999)
+	{
+		Object(root).screen_game.mc_game_M.txt_bet_num.text = String(int(num/1000000)+","+int((num%1000000)/100000)+int((num%100000)/10000)+int((num%10000)/1000)+","+int((num%1000)/100)+int((num%100)/10)+int(num%10));
+	}else if(num > 999)
+	{
+		Object(root).screen_game.mc_game_M.txt_bet_num.text = String(int(num/1000)+","+int((num%1000)/100)+int((num%100)/10)+int(num%10));
+	}else
+	{
+		Object(root).screen_game.mc_game_M.txt_bet_num.text = String(num);
+	}
+}
+
+
+function ShowWinNum():void
+{
+	
+	var num:int;
+	num = the_num_of_win;
+
+	if(num > 999999)
+	{
+		Object(root).screen_game.mc_game_M.txt_win_num.text = String(int(num/1000000)+","+int((num%1000000)/100000)+int((num%100000)/10000)+int((num%10000)/1000)+","+int((num%1000)/100)+int((num%100)/10)+int(num%10));
+	}else if(num > 999)
+	{
+		Object(root).screen_game.mc_game_M.txt_win_num.text = String(int(num/1000)+","+int((num%1000)/100)+int((num%100)/10)+int(num%10));
+	}else
+	{
+		Object(root).screen_game.mc_game_M.txt_win_num.text = String(num);
+	}
+}
+
+
+
+//btn_credit_up_function
+Object(root).screen_game.mc_game_M.btn_credits_up.addEventListener(MouseEvent.CLICK, SetCreditPerPlayUpFunction);
+//btn_credit_down_function
+Object(root).screen_game.mc_game_M.btn_credits_down.addEventListener(MouseEvent.CLICK, SetCreditPerPlayDownFunction);
+
+
+//btn_play_up_function
+Object(root).screen_game.mc_game_M.btn_play_up.addEventListener(MouseEvent.CLICK, SetPlayUpFunction);
+//btn_play_down_function
+Object(root).screen_game.mc_game_M.btn_play_down.addEventListener(MouseEvent.CLICK, SetPlayDownFunction);
+
+
+function SetCreditPerPlayUpFunction(e:MouseEvent):void
+{
+	
+	if(credits_per_play == 1)
+	{
+		credits_per_play = 2;
+		Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(2);
+		ShowBetNum();
+	}else if(credits_per_play == 2)
+	{
+		credits_per_play = 3;
+		Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(3);
+		ShowBetNum();
+	}else if(credits_per_play == 3)
+	{
+		credits_per_play = 6;
+		Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(4);
+		ShowBetNum();
+	}else if(credits_per_play == 6)
+	{
+		credits_per_play = 10;
+		Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(5);
+		ShowBetNum();
+	}else if(credits_per_play == 10)
+	{
+		Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(5);
+		ShowBetNum();
+	}else
+	{
+
+	}
+}
+
+function SetCreditPerPlayDownFunction(e:MouseEvent):void
+{
+	
+	if(credits_per_play == 1)
+	{
+		Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(1);
+		ShowBetNum();
+	}else if(credits_per_play == 2)
+	{
+		credits_per_play = 1;
+		Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(1);
+		ShowBetNum();
+	}else if(credits_per_play == 3)
+	{
+		credits_per_play = 2;
+		Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(2);
+		ShowBetNum();
+	}else if(credits_per_play == 6)
+	{
+		credits_per_play = 3;
+		Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(3);
+		ShowBetNum();
+	}else if(credits_per_play == 10)
+	{
+		credits_per_play = 6;
+		Object(root).screen_game.mc_game_M.mc_credits_status.gotoAndStop(4);
+		ShowBetNum();
+	}else
+	{
+
+	}
+}
+
+
+function SetPlayUpFunction(e:MouseEvent):void
+{
+	
+	if(play_gold_symbols == 1)
+	{
+		play_gold_symbols = 2;
+		Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(2);
+		ShowBetNum();
+		//ShowSuperItem();
+	}else if(play_gold_symbols == 2)
+	{
+		play_gold_symbols = 3;
+		Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(3);
+		ShowBetNum();
+	}else if(play_gold_symbols == 3)
+	{
+		play_gold_symbols = 4;
+		Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(4);
+		ShowBetNum();
+	}else if(play_gold_symbols == 4)
+	{
+		play_gold_symbols = 5;
+		Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(5);
+		ShowBetNum();
+	}else if(play_gold_symbols == 5)
+	{
+		Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(5);
+		ShowBetNum();
+	}else
+	{
+
+	}
+}
+
+function SetPlayDownFunction(e:MouseEvent):void
+{
+	
+	if(play_gold_symbols == 1)
+	{
+		Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(1);
+		ShowBetNum();
+	}else if(play_gold_symbols == 2)
+	{
+		play_gold_symbols = 1;
+		Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(1);
+		ShowBetNum();
+	}else if(play_gold_symbols == 3)
+	{
+		play_gold_symbols = 2;
+		Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(2);
+		ShowBetNum();
+	}else if(play_gold_symbols == 4)
+	{
+		play_gold_symbols = 3;
+		Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(3);
+		ShowBetNum();
+	}else if(play_gold_symbols == 5)
+	{
+		play_gold_symbols = 4;
+		Object(root).screen_game.mc_game_M.mc_play_status.gotoAndStop(4);
+		ShowBetNum();
+	}else
+	{
+
+	}
+}
+
+
+//设置所有item都为nor状态
+function ResetItem():void
+{
+	//temp
+	/*
+	Object(root).screen_game.mc_game_M.reel.reel_belt_01.static_reel_01.item_01.gotoAndStop(1);
+	Object(root).screen_game.mc_game_M.reel.reel_belt_01.static_reel_01.item_02.gotoAndStop(1);
+	Object(root).screen_game.mc_game_M.reel.reel_belt_01.static_reel_01.item_03.gotoAndStop(1);
+	Object(root).screen_game.mc_game_M.reel.reel_belt_01.static_reel_01.item_04.gotoAndStop(1);
+	*/
+}
